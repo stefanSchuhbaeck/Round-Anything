@@ -218,6 +218,24 @@ module testingInternals(){
   }
 }
 
+function sum_axis(points, start, end, axis, ret=0)=
+/* Recusive: Create sum over one axis of list of points with provided start and end (inclusive)
+ */
+  let(_end=min(end, len(points)))
+  (start > _end) ? ret : sum_axis(points, start+1, _end, axis, ret+points[start][axis]);
+
+function default_r(p, r)=(p.z==undef) ? r : p.z;
+
+function rel_radii_points(points, _r=2)=
+/*translate set of relative radii_points to absolute radii_points. If a point doesnot provide a radii use default value*/
+    [for(i=[0:len(points)-1])
+        [
+        sum_axis(points, start=0, end=i, axis=0),
+        sum_axis(points, start=0, end=i, axis=1),
+        default_r(points[i], _r),
+        ]
+    ];
+
 function polyRound(radiipoints,fn=5,mode=0)=
   /*Takes a list of radii points of the format [x,y,radius] and rounds each point
     with fn resolution
